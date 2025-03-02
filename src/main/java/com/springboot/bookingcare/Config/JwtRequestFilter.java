@@ -22,6 +22,13 @@ public class JwtRequestFilter extends OncePerRequestFilter {
     @Autowired CustomJWT jwt;
     @Autowired
     CustomeUserDetailService customeUserDetailService;
+
+    // cấu hình các url được bỏ qua không cần filter
+    @Override
+    protected boolean shouldNotFilter(HttpServletRequest request) throws ServletException {
+        String path = request.getServletPath();
+        return path.equals("/authenticate") || path.equals("/register")|| path.equals("/refreshToken")|| path.startsWith("/public/"); // Các URL không cần filter
+    }
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
         // lấy token và refresh token từ header
@@ -43,10 +50,10 @@ public class JwtRequestFilter extends OncePerRequestFilter {
             }
         }
         // bắt đầu kiểm tra token
-        try {
-            // kiểm tra token có đúng nhưng hết hạn hay không=> nếu có thì đi vào if
-            int tokenStatus=0;
-            if(token!=null){
+        if(token!=null){
+            try {
+                // kiểm tra token có đúng nhưng hết hạn hay không=> nếu có thì đi vào if
+                int tokenStatus=0;
                 tokenStatus=jwt.validateToken(token);
                 if(tokenStatus==401){
                     // kiểm tra refresh token
@@ -64,24 +71,27 @@ public class JwtRequestFilter extends OncePerRequestFilter {
                     response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
                     return;
                 }
+                // token hợp lệ
+                if(username!=null&&jwt.validateToken(token)==200&& SecurityContextHolder.getContext().getAuthentication() == null){
+                    UserDetails userDetails = customeUserDetailService.loadUserByUsername(username);
+                    CustomeUserDetails customUserDetail = (CustomeUserDetails) userDetails;
+                    UsernamePasswordAuthenticationToken authToken
+                            =new UsernamePasswordAuthenticationToken(customUserDetail,null,userDetails.getAuthorities());
+                    SecurityContextHolder.getContext().setAuthentication(authToken);
+                    Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+                    UserDetails a = (UserDetails) authentication.getPrincipal();
+                    CustomeUserDetails b = (CustomeUserDetails) a;
+                    System.out.println("thông tin của User: "+ b.getUser().getIdUser());
+                }
+                filterChain.doFilter(request, response);
+            } catch (Exception e) {
+                System.out.println("Lỗi tại jwt request fillter: "+e.getMessage());
+                throw new RuntimeException(e);
             }
-
-            // token hợp lệ
-            if(username!=null&&jwt.validateToken(token)==200&& SecurityContextHolder.getContext().getAuthentication() == null){
-                UserDetails userDetails = customeUserDetailService.loadUserByUsername(username);
-                CustomeUserDetails customUserDetail = (CustomeUserDetails) userDetails;
-                UsernamePasswordAuthenticationToken authToken
-                        =new UsernamePasswordAuthenticationToken(customUserDetail,null,userDetails.getAuthorities());
-                SecurityContextHolder.getContext().setAuthentication(authToken);
-                Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-                UserDetails a = (UserDetails) authentication.getPrincipal();
-                CustomeUserDetails b = (CustomeUserDetails) a;
-                System.out.println("thông tin của User: "+ b.getUser().getIdUser());
-            }
-            filterChain.doFilter(request, response);
-        } catch (Exception e) {
-            System.out.println("Lỗi tại jwt request fillter: "+e.getMessage());
-            throw new RuntimeException(e);
+        }else if(token==null){
+            // nếu token rỗng
+            response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Token is missing");
+            return;
         }
 
     }

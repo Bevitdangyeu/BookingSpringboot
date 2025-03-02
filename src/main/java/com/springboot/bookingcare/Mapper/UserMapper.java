@@ -13,17 +13,8 @@ public class UserMapper {
         userDto.setImage(userEntity.getImage());
         userDto.setCoverPhoto(userEntity.getCoverPhoto());
         userDto.setFullName(userEntity.getFullName());
-        if(userEntity.getRole().getRoleId()==3){
-            userDto.setAddress(userEntity.getDoctor().getAdress());
-            userDto.setDescription(userEntity.getDoctor().getDescription());
-            userDto.setExperience(userEntity.getDoctor().getExperience());
-            userDto.setExpertise(userEntity.getDoctor().getExpertise());
-            userDto.setHospital(userEntity.getDoctor().getHospitalId().getHospitalName());
-            userDto.setStar(userEntity.getDoctor().getStar());
-            userDto.setCertificate(userEntity.getDoctor().getCertificate());
-            userDto.setIdDoctor(userEntity.getDoctor().getDoctorId());
-            userDto.setPhoneNumber(userEntity.getDoctor().getPhoneNumber());
-        }
+        userDto.setRole(userEntity.getRole().getRoleCode());
+        userDto.setAddress(userEntity.getAddress());
         return userDto;
     }
 }

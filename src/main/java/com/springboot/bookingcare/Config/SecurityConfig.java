@@ -21,6 +21,11 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.access.AccessDeniedHandler;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.CorsConfigurationSource;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+
+import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 @Configuration
@@ -50,8 +55,9 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http.csrf(csrf -> csrf.disable()) // Tắt CSRF
+                .cors(cors -> cors.configurationSource(corsConfigurationSource())) //Bật CORS
                 .authorizeHttpRequests(authorize -> authorize
-                        .requestMatchers("/authenticate","/public/**","/uploads/**","/ws/**","/chat/**","/queue/errors").permitAll()// Cho phép truy cập endpoint này
+                        .requestMatchers("/authenticate","/public/**","/uploads/**","/ws/**","/chat/**","/queue/errors","/refreshToken").permitAll()// Cho phép truy cập endpoint này
                         // nếu có được 4 quyền READ CREATE UPDATE DELETE thì mới có thể truy cập được admin 1
                         .requestMatchers("/admin1").access((authentication, context) -> {
                             authentication.get().getAuthorities().forEach(authority -> {
@@ -84,6 +90,18 @@ public class SecurityConfig {
                         .sessionCreationPolicy(SessionCreationPolicy.STATELESS) // Đảm bảo không sử dụng session server-side
                 );
                 return http.build();
+    }
+    @Bean
+    public CorsConfigurationSource corsConfigurationSource() {
+        CorsConfiguration configuration = new CorsConfiguration();
+        configuration.setAllowedOrigins(List.of("http://localhost:4200"));
+        configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE"));
+        configuration.setAllowedHeaders(List.of("*"));
+        configuration.setAllowCredentials(true);
+
+        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+        source.registerCorsConfiguration("/**", configuration);
+        return source;
     }
     @SuppressWarnings("removal")
     @Bean

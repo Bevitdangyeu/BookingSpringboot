@@ -53,7 +53,7 @@ public class CustomJWT {
     }
 
     // hàm tạo token
-    public AuthenticationResponse generateToken(String userName,int id) throws Exception{
+    public AuthenticationResponse generateToken(String userName,int id,String role) throws Exception{
         // tạo header dưới dạng chuỗi json
         String headerJson="{\"alg\":\"HS256\",\"typ\":\"JWT\"}";
         // mã hóa header thành dạng base64
@@ -65,7 +65,7 @@ public class CustomJWT {
         // Chuyển thời gian `issuedAt` và `expirationTime` sang giờ Việt Nam (UTC+7)( Đây là thời gian bắt đầu của token và access token)
         LocalDateTime issuedAtVietnam = issuedAt.atZone(ZoneOffset.UTC).withZoneSameInstant(vietnamZone).toLocalDateTime();
         // Thêm 180 giây để tính thời gian hết hạn (Expiration) theo múi giờ UTC ( đây là thời gian hết hạn của token)
-        LocalDateTime expirationTime = LocalDateTime.now(ZoneOffset.UTC).plus(300, ChronoUnit.SECONDS);
+        LocalDateTime expirationTime = LocalDateTime.now(ZoneOffset.UTC).plus(120, ChronoUnit.SECONDS);
         LocalDateTime expirationTimeVietnam = expirationTime.atZone(ZoneOffset.UTC).withZoneSameInstant(vietnamZone).toLocalDateTime();
         // tạo thời gian hết hạn cho refresh token
         LocalDateTime expirationTimeRefreshToken = LocalDateTime.now(ZoneOffset.UTC).plus(300, ChronoUnit.SECONDS);
@@ -82,6 +82,7 @@ public class CustomJWT {
         claimsAccessToken.put("iat",iat);
         claimsAccessToken.put("exp",exp);
         claimsAccessToken.put("id",id);
+        claimsAccessToken.put("role",role);
         // chuyển claims v kiểu json
         String payloadJson=new com.fasterxml.jackson.databind.ObjectMapper().writeValueAsString(claimsAccessToken);
         // mã hóa sang base64
@@ -90,7 +91,8 @@ public class CustomJWT {
         claimsRefresh.put("userName", userName);
         claimsRefresh.put("iat",iat); // thời điểm bắt đầu refresh token
         claimsRefresh.put("exp", expRefreshToken); // thời gian hết hạn của refresh token
-        claimsRefresh.put("idUser", id);
+        claimsRefresh.put("id", id);
+        claimsAccessToken.put("role",role);
         String payloadJsonRefresh = new com.fasterxml.jackson.databind.ObjectMapper().writeValueAsString(claimsRefresh);
         String encodedPayloadRefresh = encodeBase64(payloadJsonRefresh);
         // tạo khóa cho access token
@@ -106,13 +108,13 @@ public class CustomJWT {
         authentication.setRefreshToken(encodeHeader + "." + encodedPayloadRefresh + "."+ signatureRefresh);
         return authentication;
     }
-    public String refreshToken(String userName, int id) throws JsonProcessingException {
+    public String refreshToken(String userName, int id,String role) throws JsonProcessingException {
         String headerJson="{\"alg\":\"HS256\",\"typ\":\"JWT\"}";
         String encodeHeader=encodeBase64(headerJson);
         ZoneId vietnamZone = ZoneId.of("Asia/Saigon");
         LocalDateTime issuedAt = LocalDateTime.now(ZoneOffset.UTC);
         LocalDateTime issuedAtVietnam = issuedAt.atZone(ZoneOffset.UTC).withZoneSameInstant(vietnamZone).toLocalDateTime();
-        LocalDateTime expirationTime = LocalDateTime.now(ZoneOffset.UTC).plus(300, ChronoUnit.SECONDS);
+        LocalDateTime expirationTime = LocalDateTime.now(ZoneOffset.UTC).plus(120, ChronoUnit.SECONDS);
         LocalDateTime expirationTimeVietnam = expirationTime.atZone(ZoneOffset.UTC).withZoneSameInstant(vietnamZone).toLocalDateTime();
         long iat = issuedAtVietnam.atZone(vietnamZone).toEpochSecond();
         long exp = expirationTimeVietnam.atZone(vietnamZone).toEpochSecond();
@@ -121,10 +123,12 @@ public class CustomJWT {
         claimsAccessToken.put("iat",iat);
         claimsAccessToken.put("exp",exp);
         claimsAccessToken.put("id",id);
+        claimsAccessToken.put("role",role);
         String payloadJson=new com.fasterxml.jackson.databind.ObjectMapper().writeValueAsString(claimsAccessToken);
         String encodedPayload=encodeBase64(payloadJson);
         String signatureInput = encodeHeader + "." + encodedPayload;
-        return createHMACSignature(signatureInput,SECRET_KEY);
+        String signatureAccess = createHMACSignature(signatureInput,SECRET_KEY);
+        return encodeHeader + "." + encodedPayload + "."+ signatureAccess;
     }
     // kiểm tra xem token có hợp lệ hay không
     public int validateToken(String token) throws Exception{
@@ -189,6 +193,17 @@ public class CustomJWT {
             return payloadMap.get("id").toString();
         }catch(Exception e){
             return null;
+        }
+    }
+    public String extractRole(String token){
+        try {
+            // chuyển từ base64 sang chuỗi bình thường
+            String payload=new String(Base64.getUrlDecoder().decode(token.split("\\.")[1]));
+            ObjectMapper objectMappe=new ObjectMapper();
+            Map<String,Object> payloadMap=objectMappe.readValue(payload,Map.class);
+            return payloadMap.get("role").toString();
+        } catch (Exception e) {
+            throw new RuntimeException(e);
         }
     }
 }

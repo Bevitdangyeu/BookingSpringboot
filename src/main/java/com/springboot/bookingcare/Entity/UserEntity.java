@@ -26,6 +26,8 @@ public class UserEntity {
     private String userName;
     @Column(name="password")
     private String password;
+    @Column(name="address")
+    private String address;
     @OneToOne(mappedBy="userId",fetch = FetchType.LAZY)
     private OtpEntity otp;
     @OneToOne(mappedBy="user",fetch = FetchType.LAZY)

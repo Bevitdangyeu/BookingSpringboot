@@ -24,8 +24,6 @@ public class DoctorEntity {
     private String certificate; // giấy chứng nhận
     @Column (name="description",columnDefinition = "TEXT")
     private String description;
-    @Column(name="address")
-    private String adress;
     @Column(name="phoneNumber")
     private String phoneNumber;
     @OneToOne(cascade = CascadeType.ALL)
