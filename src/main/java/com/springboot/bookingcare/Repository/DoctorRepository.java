@@ -9,4 +9,5 @@ import java.util.List;
 @Repository
 public interface DoctorRepository extends CrudRepository<DoctorEntity,Integer> {
     List<DoctorEntity> findAll();
+    DoctorEntity findByDoctorId(int doctorId);
 }

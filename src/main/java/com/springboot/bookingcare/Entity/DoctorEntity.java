@@ -4,6 +4,9 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @Getter
 @Setter
 @Entity
@@ -32,4 +35,12 @@ public class DoctorEntity {
     @ManyToOne(fetch=FetchType.EAGER)
     @JoinColumn(name="idHospital")
     private HospitalEntity hospitalId;
+    @ManyToMany(mappedBy = "doctor")
+    private List<TimeEntity> time=new ArrayList<>();
+    @OneToMany(mappedBy = "doctor")
+    private List<AppointmentEntity> appointment=new ArrayList<>();
+    @OneToMany(mappedBy = "doctorId")
+    private List<EvaluateEntity> evaluateEntityList=new ArrayList<>();
+    @OneToMany(mappedBy = "doctor")
+    private List<PostEntity> posts=new ArrayList<>();
 }

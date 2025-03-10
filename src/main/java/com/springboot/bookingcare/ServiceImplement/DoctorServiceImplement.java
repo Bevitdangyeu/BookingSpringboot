@@ -26,4 +26,9 @@ public class DoctorServiceImplement implements DoctorService {
         }
         return doctorDTOList;
     }
+
+    @Override
+    public DoctorDTO findByDoctorId(int id) {
+        return doctorMapper.EntityToDTO(doctorRepository.findByDoctorId(id));
+    }
 }

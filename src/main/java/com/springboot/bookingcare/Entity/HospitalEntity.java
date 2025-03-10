@@ -21,6 +21,10 @@ public class HospitalEntity {
     private String hospitalName;
     @Column(name="address")
     private String address;
+    @Column(name="image")
+    private String image;
+    @Column(name="description",columnDefinition = "TEXT")
+    private String description;
     @OneToMany(mappedBy="hospitalId")
     private List<DoctorEntity> listDoctor=new ArrayList<>();
 }
