@@ -2,6 +2,7 @@ package com.springboot.bookingcare;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.cache.annotation.EnableCaching;
 
 import javax.crypto.Mac;
 import java.security.Provider;
@@ -13,10 +14,10 @@ import java.util.Set;
 import java.util.TimeZone;
 
 @SpringBootApplication
+@EnableCaching
 public class BookingcareApplication {
 
 	public static void main(String[] args) {
 		SpringApplication.run(BookingcareApplication.class, args);
 	}
-
 }

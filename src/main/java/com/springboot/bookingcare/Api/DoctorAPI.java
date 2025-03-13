@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -18,7 +19,8 @@ public class DoctorAPI {
     DoctorService doctorService;
     @GetMapping("/list")
     public List<DoctorDTO> GetList(){
-       return doctorService.findAllDoctor();
+        System.out.println("Vào API để lấy danh sách bác sĩ vào lúc: "+ LocalDateTime.now());
+        return doctorService.findAllDoctor();
    }
     @GetMapping("/profile/{id}")
     public DoctorDTO getProfile(@PathVariable("id") int id){

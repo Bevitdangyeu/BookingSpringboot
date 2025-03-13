@@ -10,6 +10,7 @@ import jakarta.persistence.ManyToOne;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.io.Serializable;
 import java.time.LocalDate;
@@ -17,9 +18,7 @@ import java.time.LocalDate;
 @Getter
 @Setter
 @NoArgsConstructor
-@JsonTypeInfo(use = JsonTypeInfo.Id.CLASS, property = "@class")
 public class AppointmentRequest implements Serializable  {
-    private static final long serialVersionUID = 1L;
     private String fullName;
     private int sex;
     private String phoneNumber;
@@ -29,6 +28,6 @@ public class AppointmentRequest implements Serializable  {
     private String image;
     private String dateOfBirth;
     private LocalDate createAt;
-    private int doctor;
-    private String time;
+    private DoctorDTO doctor;
+    private TimeDTO time;
 }
