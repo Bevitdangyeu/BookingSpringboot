@@ -27,7 +27,7 @@ public class AppointmentRequest implements Serializable  {
     private String status;
     private String image;
     private String dateOfBirth;
-    private LocalDate createAt;
+    private LocalDate date;
     private DoctorDTO doctor;
     private TimeDTO time;
 }

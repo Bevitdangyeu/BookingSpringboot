@@ -40,7 +40,7 @@ public class DoctorEntity {
     @OneToMany(mappedBy = "doctor")
     private List<AppointmentEntity> appointment=new ArrayList<>();
     @OneToMany(mappedBy = "doctorId")
-    private List<EvaluateEntity> evaluateEntityList=new ArrayList<>();
+    private List<ReviewsEntity> ReivewsList=new ArrayList<>();
     @OneToMany(mappedBy = "doctor")
     private List<PostEntity> posts=new ArrayList<>();
 }

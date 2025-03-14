@@ -39,6 +39,8 @@ public class UserEntity {
     @JoinColumn(name="roleId")
     private RoleEntity role=new RoleEntity();
     @OneToMany(mappedBy = "userId")
-    private List<EvaluateEntity> entities=new ArrayList<>();
+    private List<ReviewsEntity> reviewsList=new ArrayList<>();
+    @OneToMany(mappedBy = "user")
+    private List<ReviewReplies> reviewRepliesList=new ArrayList<>();
 
 }

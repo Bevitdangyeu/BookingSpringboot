@@ -3,6 +3,7 @@ package com.springboot.bookingcare;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.cache.annotation.EnableCaching;
+import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
 
 import javax.crypto.Mac;
 import java.security.Provider;
@@ -15,6 +16,7 @@ import java.util.TimeZone;
 
 @SpringBootApplication
 @EnableCaching
+@EnableJpaAuditing
 public class BookingcareApplication {
 
 	public static void main(String[] args) {

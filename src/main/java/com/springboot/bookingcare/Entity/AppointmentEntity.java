@@ -35,6 +35,8 @@ public class AppointmentEntity {
     private String dateOfBirth;
     @Column(name="createAt")
     private LocalDate createAt;
+    @Column(name="date")
+    private LocalDate date;
     @ManyToOne(fetch=FetchType.EAGER)
     @JoinColumn(name="time")
     private TimeEntity time=new TimeEntity();
@@ -42,5 +44,5 @@ public class AppointmentEntity {
     @JoinColumn(name="idDocotr")
     private DoctorEntity doctor=new DoctorEntity();
     @OneToOne(mappedBy="appointment",fetch = FetchType.LAZY)
-    private EvaluateEntity evaluate;
+    private ReviewsEntity reviews;
 }
