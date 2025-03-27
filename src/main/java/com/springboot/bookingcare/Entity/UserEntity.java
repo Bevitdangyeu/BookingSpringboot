@@ -33,14 +33,16 @@ public class UserEntity {
     private String address;
     @OneToOne(mappedBy="userId",fetch = FetchType.LAZY)
     private OtpEntity otp;
-    @OneToOne(mappedBy="user",fetch = FetchType.LAZY)
+    @OneToOne(mappedBy="user",fetch = FetchType.LAZY,cascade = CascadeType.PERSIST)
     private DoctorEntity doctor;
+    @OneToMany(mappedBy = "user")
+    private List<AppointmentEntity> appointment=new ArrayList<>();
     @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name="roleId")
     private RoleEntity role=new RoleEntity();
     @OneToMany(mappedBy = "userId")
     private List<ReviewsEntity> reviewsList=new ArrayList<>();
     @OneToMany(mappedBy = "user")
-    private List<ReviewReplies> reviewRepliesList=new ArrayList<>();
+    private List<ReviewRepliesEntity> reviewRepliesList=new ArrayList<>();
 
 }

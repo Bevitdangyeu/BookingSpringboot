@@ -3,10 +3,7 @@ package com.springboot.bookingcare.Api;
 import com.springboot.bookingcare.DTO.DoctorDTO;
 import com.springboot.bookingcare.Service.DoctorService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -25,5 +22,13 @@ public class DoctorAPI {
     @GetMapping("/profile/{id}")
     public DoctorDTO getProfile(@PathVariable("id") int id){
         return doctorService.findByDoctorId(id);
+    }
+    @PostMapping("/add")
+    public DoctorDTO add(@RequestBody DoctorDTO doctor){
+        return doctorService.add(doctor);
+    }
+    @PostMapping("/update")
+    public DoctorDTO update(@RequestBody DoctorDTO doctor){
+        return doctorService.add(doctor);
     }
 }

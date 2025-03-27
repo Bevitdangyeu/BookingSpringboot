@@ -20,7 +20,7 @@ public class AppointmentMapper {
         AppointmentDTO appointmentDTO=new AppointmentDTO();
         appointmentDTO.setDoctor(doctorMapper.EntityToDTO(appointmentEntity.getDoctor()));
         appointmentDTO.setTime(time);
-        appointmentDTO.setAppointmentId(appointmentEntity.getAppoinmentId());
+        appointmentDTO.setAppointmentId(appointmentEntity.getAppointmentId());
         appointmentDTO.setDescription(appointmentEntity.getDescription());
         appointmentDTO.setSex(appointmentEntity.getSex());
         appointmentDTO.setCreateAt(appointmentEntity.getCreateAt());
@@ -29,6 +29,8 @@ public class AppointmentMapper {
         appointmentDTO.setDateOfBirth(appointmentEntity.getDateOfBirth());
         appointmentDTO.setPhoneNumber(appointmentEntity.getPhoneNumber());
         appointmentDTO.setStatus(appointmentEntity.getStatus());
+        appointmentDTO.setReviewed(appointmentEntity.isReviewed());
+        appointmentDTO.setDate(appointmentEntity.getDate());
         return appointmentDTO;
     }
 }

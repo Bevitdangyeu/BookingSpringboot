@@ -27,7 +27,7 @@ public class JwtRequestFilter extends OncePerRequestFilter {
     @Override
     protected boolean shouldNotFilter(HttpServletRequest request) throws ServletException {
         String path = request.getServletPath();
-        return path.equals("/authenticate") || path.equals("/register")|| path.equals("/refreshToken")|| path.startsWith("/public/"); // Các URL không cần filter
+        return path.equals("/authenticate") || path.equals("/register")|| path.equals("/refreshToken")|| path.startsWith("/public/")|| path.startsWith("/ws/"); // Các URL không cần filter
     }
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
@@ -81,7 +81,11 @@ public class JwtRequestFilter extends OncePerRequestFilter {
                     Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
                     UserDetails a = (UserDetails) authentication.getPrincipal();
                     CustomeUserDetails b = (CustomeUserDetails) a;
-                    System.out.println("thông tin của User: "+ b.getUser().getIdUser());
+                    Authentication authenticationn= SecurityContextHolder.getContext().getAuthentication();
+                    UserDetails user=(UserDetails) authentication.getPrincipal();
+                    // ép user về customUserDetail
+                    CustomeUserDetails custome=(CustomeUserDetails) user;
+                    System.out.println("thông tin của User: "+ custome.getUser().getIdUser());
                 }
                 filterChain.doFilter(request, response);
             } catch (Exception e) {

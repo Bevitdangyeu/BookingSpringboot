@@ -15,8 +15,8 @@ public class AppointmentEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "appointment_seq")
     @SequenceGenerator(name = "appointment_seq", sequenceName = "appointment_appointmentid_seq", allocationSize = 1)
-    @Column(name="appoinmentId")
-    private int appoinmentId;
+    @Column(name="appointmentId")
+    private int appointmentId;
     @Column(name="fullName")
     private String fullName;
     @Column(name="Sex")
@@ -37,11 +37,16 @@ public class AppointmentEntity {
     private LocalDate createAt;
     @Column(name="date")
     private LocalDate date;
+    @Column(name="isReviewed")
+    private boolean isReviewed;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name="idUser")
+    private UserEntity user;
     @ManyToOne(fetch=FetchType.EAGER)
     @JoinColumn(name="time")
     private TimeEntity time=new TimeEntity();
     @ManyToOne(fetch=FetchType.EAGER)
-    @JoinColumn(name="idDocotr")
+    @JoinColumn(name="idDoctor")
     private DoctorEntity doctor=new DoctorEntity();
     @OneToOne(mappedBy="appointment",fetch = FetchType.LAZY)
     private ReviewsEntity reviews;

@@ -50,7 +50,7 @@ public class RabbitMQConfig {
     public DirectExchange directExchange(){
         return new DirectExchange(EXCHANGE_NAME);
     }
-    // tạo binding
+    // tạo binding, tạo routing key cho queue
     @Bean
     public Binding appointmentBinding(Queue queue){
         return BindingBuilder.bind(queue).to(directExchange()).with("appointment_routing");

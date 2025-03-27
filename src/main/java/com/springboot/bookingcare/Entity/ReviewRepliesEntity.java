@@ -15,7 +15,7 @@ import java.time.LocalDateTime;
 @Entity
 @Table(name="ReviewReplies")
 @EntityListeners(AuditingEntityListener.class) // Kích hoạt auditing cho entity
-public class ReviewReplies {
+public class ReviewRepliesEntity {
     @Id
     @Column(name="id")
     @GeneratedValue(strategy = GenerationType.SEQUENCE,generator = "ReviewReplies_seq")
@@ -33,6 +33,6 @@ public class ReviewReplies {
     private UserEntity user=new UserEntity();
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name="reviewsId")
-    private ReviewsEntity reviewsEntity=new ReviewsEntity();
+    private ReviewsEntity reviews=new ReviewsEntity();
 
 }

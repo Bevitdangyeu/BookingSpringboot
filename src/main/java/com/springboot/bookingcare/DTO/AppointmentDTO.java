@@ -20,4 +20,6 @@ public class AppointmentDTO {
     private LocalDate createAt;
     private DoctorDTO doctor;
     private TimeDTO time;
+    private LocalDate date;
+    private boolean isReviewed;
 }

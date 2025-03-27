@@ -12,7 +12,7 @@ import java.util.List;
 
 @Repository
 public interface TimeRepository extends CrudRepository<TimeEntity,Integer> {
-    @Query("select t from TimeEntity t JOIN t.doctor d where d.doctorId= :doctorId and t.timeId NOT IN (select t1.timeId from AppointmentEntity a JOIN TimeEntity t1 on t1.timeId = a.time.timeId where a.doctor.doctorId = :doctorId and a.createAt= :time) ")
+    @Query("select t from TimeEntity t JOIN t.doctor d where d.doctorId= :doctorId and t.timeId NOT IN (select t1.timeId from AppointmentEntity a JOIN TimeEntity t1 on t1.timeId = a.time.timeId where a.doctor.doctorId = :doctorId and a.date= :time) ")
     public List<TimeEntity> getTimeByIdAndTime(@Param("doctorId")int doctorId, @Param("time") LocalDate time);
     public TimeEntity findByTimeId(int timeId);
 }

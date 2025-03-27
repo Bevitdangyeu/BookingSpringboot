@@ -2,7 +2,8 @@ package com.springboot.bookingcare.ServiceImplement;
 
 import com.springboot.bookingcare.Config.RabbitMQConfig;
 import com.springboot.bookingcare.DTO.AppointmentRequest;
-import com.springboot.bookingcare.Service.AppoinmentService;
+import com.springboot.bookingcare.Service.AppointmentService;
+import com.springboot.bookingcare.Service.AppointmentService;
 import org.springframework.amqp.rabbit.annotation.RabbitHandler;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
@@ -24,7 +25,7 @@ public class AppointmentConsumer {
     @Autowired
     private RabbitTemplate rabbitTemplate;
     @Autowired
-    AppoinmentService appoinmentService;
+    AppointmentService appoinmentService;
 
     private static final ConcurrentHashMap<String, Boolean> bookedSlots = new ConcurrentHashMap<>();
     private static final ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
@@ -38,6 +39,7 @@ public class AppointmentConsumer {
         String key = time + "-" + doctor + "-" + date.toString();
         Map<String, String> response = new HashMap<>();
         String responseMessage;
+        // thêm key vào map nếu key chưa tồn tại, sau đó thêm lịch hẹn vào cơ ở dữ liệu
         if(bookedSlots.putIfAbsent(key,true)==null){
             // gọi service để thêm vào cơ sở dữ liệu
             boolean value=appoinmentService.addAppointment(appointmentRequest);
@@ -58,6 +60,9 @@ public class AppointmentConsumer {
                 response.put("status","200");
                 return response;
             }else{
+                if (bookedSlots.containsKey(key)) {
+                    bookedSlots.remove(key);
+                }
                 responseMessage="Đặt lịch thất bại, lỗi hệ thống";
                 response.put("message",responseMessage);
                 response.put("status","400");

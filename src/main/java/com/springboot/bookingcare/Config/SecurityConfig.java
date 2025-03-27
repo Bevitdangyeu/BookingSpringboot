@@ -6,15 +6,19 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authorization.AuthorizationDecision;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.annotation.web.builders.WebSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityCustomizer;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.context.SecurityContextHolderStrategy;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -57,7 +61,8 @@ public class SecurityConfig {
         http.csrf(csrf -> csrf.disable()) // Tắt CSRF
                 .cors(cors -> cors.configurationSource(corsConfigurationSource())) //Bật CORS
                 .authorizeHttpRequests(authorize -> authorize
-                        .requestMatchers("/authenticate","/public/**","/uploads/**","/ws/**","/chat/**","/queue/errors","/refreshToken").permitAll()// Cho phép truy cập endpoint này
+                        .requestMatchers("/authenticate","/public/**","/uploads/**","/ws/**","/queue/errors","/refreshToken","/error").permitAll()// Cho phép truy cập endpoint này
+                         .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
                         // nếu có được 4 quyền READ CREATE UPDATE DELETE thì mới có thể truy cập được admin 1
                         .requestMatchers("/admin1").access((authentication, context) -> {
                             authentication.get().getAuthorities().forEach(authority -> {
@@ -81,8 +86,8 @@ public class SecurityConfig {
                             return new AuthorizationDecision(hasAllAuthorities);
                         })
                         .requestMatchers("/admin2").hasAnyAuthority("CREATE")
-                        // .requestMatchers("/user/**").hasAnyAuthority("READ")
-                        .anyRequest().authenticated() // Các request khác cần xác thực
+                        .requestMatchers("/user/**").hasAnyAuthority("READ")
+                        .anyRequest().authenticated()
                 )
                 // cài đặt đi qua jwt trước
                 .addFilterBefore(jwtRequestFilter, UsernamePasswordAuthenticationFilter.class)
@@ -94,8 +99,8 @@ public class SecurityConfig {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedOrigins(List.of("http://localhost:4200"));
-        configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE"));
+        configuration.setAllowedOriginPatterns(List.of("*"));
+        configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
         configuration.setAllowedHeaders(List.of("*"));
         configuration.setAllowCredentials(true);
 
@@ -115,8 +120,9 @@ public class SecurityConfig {
     // cấu hình bỏ qua những tài nguyên tĩnh
     @Bean
     public WebSecurityCustomizer webSecurityCustomizer() {
-        return (web) -> web.ignoring().requestMatchers("/css/**","/js/**","/vendors/**","/assets/**","/admin/**","/profile/**","/uploads/**","/image/**","/chatcss/**","/post/**"); // Bỏ qua các yêu cầu đến các tài nguyên tĩnh
+        return (web) -> web.ignoring().requestMatchers("/css/**","/js/**","/vendors/**","/assets/**","/admin/**","/profile/**","/uploads/**","/image/**","/chatcss/**","/post/**","/ws/**"); // Bỏ qua các yêu cầu đến các tài nguyên tĩnh
 
     }
+
 
 }

@@ -1,25 +1,32 @@
 package com.springboot.bookingcare.Api;
 
+import com.springboot.bookingcare.DTO.AppointmentDTO;
 import com.springboot.bookingcare.DTO.AppointmentRequest;
+import com.springboot.bookingcare.Service.AppointmentService;
+import com.springboot.bookingcare.Service.AppointmentService;
 import com.springboot.bookingcare.ServiceImplement.AppointmentProducer;
+import com.springboot.bookingcare.ServiceImplement.CustomeUserDetails;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.Map;
 
 @RestController
-@RequestMapping("/public")
 public class AppointmentAPI {
+    @Autowired
+    AppointmentService appointmentService;
     private final AppointmentProducer appointmentProducer;
 
     public AppointmentAPI(AppointmentProducer appointmentProducer) {
         this.appointmentProducer = appointmentProducer;
     }
-    @PostMapping("/appoientment/add")
+    @PostMapping("/public/appointment/add")
     public ResponseEntity<Map<String,String>> bookAppointment(@RequestBody AppointmentRequest request) {
       Map responseFromConsumer= appointmentProducer.sendAppointmentRequest(request);
       if(responseFromConsumer.get("status").equals("200")){
@@ -29,9 +36,20 @@ public class AppointmentAPI {
          return ResponseEntity.status(HttpStatus.CONFLICT).body(responseFromConsumer);
       }
     }
-    @PostMapping("/appoientment/addd")
-    public ResponseEntity<String> bookingAppointment(@RequestBody AppointmentRequest request) {
-        appointmentProducer.sendEmailRequest(request);
-        return ResponseEntity.ok("Email xác nhận đã được gửi!");
+    @GetMapping("/user/appointment/list")
+    public List<AppointmentDTO> findAllPublic(){
+        // lấy thông tin user từ security contex
+        Authentication authentication= SecurityContextHolder.getContext().getAuthentication();
+        if(authentication!=null){
+            UserDetails user=(UserDetails) authentication.getPrincipal();
+            // ép user về customUserDetail
+            CustomeUserDetails custome=(CustomeUserDetails) user;
+            int id=custome.getUser().getIdUser();
+            for(AppointmentDTO a: appointmentService.findAllForUser(id)){
+                System.out.println(a);
+            }
+            return appointmentService.findAllForUser(id);
+        }
+        return null;
     }
 }
