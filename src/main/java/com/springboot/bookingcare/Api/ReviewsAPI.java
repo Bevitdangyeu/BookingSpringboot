@@ -10,12 +10,16 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.Payload;
+import org.springframework.messaging.simp.SimpMessageHeaderAccessor;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
+import javax.swing.*;
+import java.security.Principal;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -30,24 +34,27 @@ public class ReviewsAPI {
         this.messagingTemplate = messagingTemplate;
     }
     @MessageMapping("/user/review/add")
-    public ResponseEntity<Map<String,String>> add(@Payload ReviewsDTO reviewsDTO){
+    public ResponseEntity<Map<String,String>> add(@Payload ReviewsDTO reviewsDTO, SimpMessageHeaderAccessor headerAccessor){
         Map<String,String> response=new HashMap<>();
        try{
-           Authentication authentication= SecurityContextHolder.getContext().getAuthentication();
-//         //  if(authentication!=null){
-//               UserDetails user=(UserDetails) authentication.getPrincipal();
-//               // ép user về customeUserDetail
-//               CustomeUserDetails custome=(CustomeUserDetails) user;
-//               int id=custome.getUser().getIdUser();
-//               UserDTO userDTO=new UserDTO();
-//               userDTO.setIdUser(id);
-//               reviewsDTO.setUser(userDTO);
-               reviewsDTO= reviewsService.add(reviewsDTO);
-               response.put("Message","Đánh giá đã được gửi");
+           Principal principal = (Principal) headerAccessor.getSessionAttributes().get("user");
+
+           if (principal instanceof UsernamePasswordAuthenticationToken) {
+               UsernamePasswordAuthenticationToken authToken = (UsernamePasswordAuthenticationToken) principal;
+               String userId = (String) authToken.getPrincipal(); // Lấy userId từ authToken
+               System.out.println("id: "+userId);
+               UserDTO userDTO = new UserDTO();
+               userDTO.setIdUser(Integer.parseInt(userId));
+               reviewsDTO.setUser(userDTO);
+               reviewsDTO = reviewsService.add(reviewsDTO);
+               response.put("Message", "Đánh giá đã được gửi");
                // gửi review đến người nhận
-                System.out.println("✅ Gửi review đến: /topic/profile/" + reviewsDTO.getDoctor().getIdDoctor());
-               messagingTemplate.convertAndSend("/topic/profile/"+reviewsDTO.getDoctor().getIdDoctor(),reviewsDTO);
+               System.out.println("✅ Gửi review đến: /topic/profile/" + reviewsDTO.getDoctor().getIdDoctor());
+               System.out.println("✅ Gửi review đến: /topic/reviewer/" + reviewsDTO.getAppointment().getAppointmentId());
+               messagingTemplate.convertAndSend("/topic/profile/" + reviewsDTO.getDoctor().getIdDoctor(), reviewsDTO);
+               messagingTemplate.convertAndSend("/topic/reviewer/" + reviewsDTO.getAppointment().getAppointmentId(), response);
                return ResponseEntity.ok(response);
+           }
          //  }
          //  else{
          //      return ResponseEntity.status(HttpStatus.CONFLICT).body(response);
@@ -56,6 +63,7 @@ public class ReviewsAPI {
            response.put("Message","Thất bại! vui lòng gửi lại.");
            return ResponseEntity.status(HttpStatus.CONFLICT).body(response);
        }
+        return null;
     }
     @GetMapping("/public/getReviews/{id}")
     public List<ReviewsDTO> findByDoctorId(@PathVariable int id){

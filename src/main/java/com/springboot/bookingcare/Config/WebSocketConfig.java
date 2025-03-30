@@ -1,5 +1,7 @@
 package com.springboot.bookingcare.Config;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.messaging.simp.config.ChannelRegistration;
 import org.springframework.messaging.simp.config.MessageBrokerRegistry;
@@ -11,6 +13,7 @@ import org.springframework.web.socket.server.support.DefaultHandshakeHandler;
 @Configuration
 @EnableWebSocketMessageBroker
 public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
+
     @Override
     public void configureMessageBroker(MessageBrokerRegistry config) {
         config.enableSimpleBroker("/topic"); // client đăng kí nhận tin nhắn bắt đầu từ /topic/**
@@ -23,15 +26,16 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
         //client sẽ đăng kí nâng cấp websocket với endpoid /ws
         registry.addEndpoint("/ws")
                 .setAllowedOrigins("http://localhost:4200") // Cho phép mọi nguồn
+                .addInterceptors(new JwtAuthInterceptor())
                 .withSockJS()
-                // .addInterceptors(new JwtAuthInterceptor()) // Thêm Interceptor xử lý JWT
-            //    .setHandshakeHandler(new CustomHandshakeHandler())
-                ;// Hỗ trợ fallback qua SockJS
-                // Chỉ sử dụng transport nàu
+            //  .setHandshakeHandler(new CustomHandshakeHandler())
+                ;
         System.out.println("WebSocket endpoint registered: /ws");
     }
-//    @Override
-//    public void configureClientInboundChannel(ChannelRegistration registration) {
-//        registration.interceptors(new JwtAuthInterceptor());  // Add interceptor to handle inbound messages
-//    }
+    @Override
+    public void configureClientInboundChannel(ChannelRegistration registration) {
+       registration.interceptors(new JwtAuthInterceptor());  // Add interceptor to handle inbound messages
+    }
+
+
 }

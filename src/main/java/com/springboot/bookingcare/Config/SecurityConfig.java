@@ -39,9 +39,11 @@ public class SecurityConfig {
     CustomeUserDetailService customeUserDetailService;
     @Autowired JwtRequestFilter jwtRequestFilter;
     @Autowired CustomeAccessDeniedHandler customeAccessDeniedHandler;
+    //SecurityContext sẽ được kế thừa từ Thread cha sang các Thread con,
     public void init() {
         SecurityContextHolder.setStrategyName(SecurityContextHolder.MODE_INHERITABLETHREADLOCAL);
     }
+
     @Bean
     public UserDetailsService userDetailsService() {
         return customeUserDetailService;
