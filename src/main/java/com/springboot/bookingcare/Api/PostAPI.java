@@ -74,4 +74,17 @@ public class PostAPI {
         }
         return null;
     }
+    @DeleteMapping("/doctor/post/delete/{id}")
+    public ResponseEntity<Map<String,String>> deletePost(@PathVariable("id") int id){
+        boolean status=postService.deleteByPostId(id);
+        Map<String,String> response=new HashMap<>();
+        if(status){
+            response.put("message","return về xóa thành công");
+            return ResponseEntity.ok(response);
+
+        }else{
+            response.put("message","Xóa bài viết thất bại");
+            return ResponseEntity.badRequest().body(response);
+        }
+    }
 }

@@ -12,4 +12,5 @@ public interface PostService {
     public PostDTO findById(int id);
     public Map<String, Object> listPost(int id, int limit, int offset);
     public List<PostDTO> findTop10();
+    public boolean deleteByPostId(int id);
 }

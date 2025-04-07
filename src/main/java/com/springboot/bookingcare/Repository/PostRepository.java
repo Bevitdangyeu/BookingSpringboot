@@ -12,6 +12,7 @@ import java.util.List;
 
 @Repository
 public interface PostRepository extends CrudRepository<PostEntity,Integer>,PostRepositoryCustom {
+    void deleteByPostId(int postId);
     PostEntity findByPostId(int postId);
     @Query("SELECT p.postId FROM PostEntity p ORDER BY p.likePost DESC, p.createAt DESC")
     List<Integer> findLatestPostIds(Pageable pageable);
@@ -19,4 +20,5 @@ public interface PostRepository extends CrudRepository<PostEntity,Integer>,PostR
     List<PostEntity> findListPost(@Param("ids") List<Integer> ids);// hiển thị trên trang chủ tối đa 10
     @Query("SELECT p FROM PostEntity p where p.doctor.doctorId = :doctorId  ORDER BY p.createAt DESC")
     Page<PostEntity> findPostsPageable(@Param("doctorId") int doctorId, Pageable pageable);
+
 }

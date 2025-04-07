@@ -12,6 +12,7 @@ import com.springboot.bookingcare.Repository.DoctorRepository;
 import com.springboot.bookingcare.Repository.PostRepository;
 import com.springboot.bookingcare.Repository.UserRepository;
 import com.springboot.bookingcare.Service.PostService;
+import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -106,6 +107,16 @@ public class PostServiceImplememt implements PostService {
             postDTOList.add(postMapper.EntityToDTO(postEntity));
         }
         return postDTOList;
+    }
+    @Transactional
+    @Override
+    public boolean deleteByPostId(int id) {
+        PostEntity post=postRepository.findByPostId(id);
+        if(post!=null){
+            postRepository.deleteByPostId(id);
+            return true;
+        }
+        return false;
     }
 
 }
