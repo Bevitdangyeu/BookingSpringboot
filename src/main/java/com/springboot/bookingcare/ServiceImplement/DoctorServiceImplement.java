@@ -36,6 +36,8 @@ public class DoctorServiceImplement implements DoctorService {
     @Autowired
     RoleRepository roleRepository;
     @Cacheable(value = "doctors",key = "'allDoctors'")
+    // @CacheEvict(value = "doctors", key = "'allDoctors'") xóa cache khi có update
+    //  @CachePut(value = "doctors", key = "'allDoctors'")    // Cập nhật lại cache
     @Override
     public List<DoctorDTO> findAllDoctor() {
         System.out.println("Vào serivce để lấy danh sách bác sĩ vào lúc: "+ LocalDateTime.now());

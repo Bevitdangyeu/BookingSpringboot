@@ -28,13 +28,15 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
+import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 @Configuration
 @EnableWebSecurity
-public class SecurityConfig {
+public class SecurityConfig implements WebMvcConfigurer{
     @Autowired
     CustomeUserDetailService customeUserDetailService;
     @Autowired JwtRequestFilter jwtRequestFilter;
@@ -125,6 +127,10 @@ public class SecurityConfig {
         return (web) -> web.ignoring().requestMatchers("/css/**","/js/**","/vendors/**","/assets/**","/admin/**","/profile/**","/uploads/**","/image/**","/chatcss/**","/post/**","/ws/**"); // Bỏ qua các yêu cầu đến các tài nguyên tĩnh
 
     }
-
-
+    @Override
+    public void addResourceHandlers(ResourceHandlerRegistry registry) {
+        // Nếu ảnh được truy cập bằng: http://localhost:8080/uploads/image.jpg
+        registry.addResourceHandler("/uploads/**")
+                .addResourceLocations("file:uploads/"); // đường dẫn tương đối
+    }
 }

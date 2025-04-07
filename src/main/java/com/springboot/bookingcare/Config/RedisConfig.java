@@ -17,7 +17,7 @@ public class RedisConfig {
         return new LettuceConnectionFactory();
     }
 
-    // bước 2: Cấu hình thao tác ữ liệu
+    // bước 2: Cấu hình thao tác dữ liệu
 
     // RedisTemplate là công cụ chính để thao tác dữ liệu trên redis
     @Bean

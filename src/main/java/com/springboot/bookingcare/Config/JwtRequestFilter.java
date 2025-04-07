@@ -27,7 +27,7 @@ public class JwtRequestFilter extends OncePerRequestFilter {
     @Override
     protected boolean shouldNotFilter(HttpServletRequest request) throws ServletException {
         String path = request.getServletPath();
-        return path.equals("/authenticate") || path.equals("/register")|| path.equals("/refreshToken")|| path.startsWith("/public/")|| path.startsWith("/ws/"); // Các URL không cần filter
+        return path.equals("/authenticate") || path.equals("/register")|| path.equals("/refreshToken")|| path.startsWith("/public/")|| path.startsWith("/ws/")||path.startsWith("/uploads/"); // Các URL không cần filter
     }
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {

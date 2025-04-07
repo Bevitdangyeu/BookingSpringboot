@@ -1,11 +1,15 @@
 package com.springboot.bookingcare.Entity;
 
 import jakarta.persistence.*;
+import lombok.Getter;
+import lombok.Setter;
 
 import java.time.LocalDateTime;
 
 @Entity
 @Table(name="post")
+@Getter
+@Setter
 public class PostEntity {
     @Id
     @Column(name="idPost")
@@ -22,7 +26,13 @@ public class PostEntity {
     private LocalDateTime updateAt;
     @Column(name="Image")
     private String image;
+    @Column(name="likePost")
+    private int likePost;
     @ManyToOne()
     @JoinColumn(name="DoctorId")
     private DoctorEntity doctor;
+    @ManyToOne()
+    @JoinColumn(name="categoryId")
+    private CategoryEntity categoryEntity;
+
 }

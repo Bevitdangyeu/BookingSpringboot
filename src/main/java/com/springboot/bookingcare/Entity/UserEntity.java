@@ -44,5 +44,4 @@ public class UserEntity {
     private List<ReviewsEntity> reviewsList=new ArrayList<>();
     @OneToMany(mappedBy = "user")
     private List<ReviewRepliesEntity> reviewRepliesList=new ArrayList<>();
-
 }

@@ -66,7 +66,7 @@ public class ReviewsAPI {
         return null;
     }
     @GetMapping("/public/getReviews/{id}")
-    public List<ReviewsDTO> findByDoctorId(@PathVariable int id){
+    public List<ReviewsDTO> findByDoctorId(@PathVariable("id") int id){
         return reviewsService.findByDoctor(id);
     }
 }

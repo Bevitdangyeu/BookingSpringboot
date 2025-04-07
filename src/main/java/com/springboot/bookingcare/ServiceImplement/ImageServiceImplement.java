@@ -17,6 +17,7 @@ public class ImageServiceImplement implements ImageService {
         String fileName=System.currentTimeMillis()+multipartFile.getOriginalFilename();
         //  tạo đường dẫn đến nơi lưu trữ file trên server
         String uploadFilePath=applicationPath+ File.separator+"uploads";
+        System.out.println(uploadFilePath);
         // tạo đối tượng file với đường dẫn uploadFilePath
         File uploadDir=new File(uploadFilePath);
         // kiểm tra đường dẫn =>có thì thư mục tồn tại, chưa th tạo mới
