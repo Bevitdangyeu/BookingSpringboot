@@ -10,7 +10,9 @@ import java.util.List;
 @Getter
 @Setter
 @Entity()
-@Table(name="userInfomation")
+@Table(name="userInfomation",indexes = {
+        @Index(name = "idx_userInformation_idUser", columnList = "idUser")
+})
 public class UserEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "user_seq")

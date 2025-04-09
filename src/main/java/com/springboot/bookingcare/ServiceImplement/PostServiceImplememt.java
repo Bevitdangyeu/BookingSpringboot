@@ -20,11 +20,11 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.time.LocalTime;
+import java.time.ZoneId;
+import java.util.*;
 
 @Service
 public class PostServiceImplememt implements PostService {
@@ -119,4 +119,48 @@ public class PostServiceImplememt implements PostService {
         return false;
     }
 
+    @Override
+    public PostDTO findByPostId(int postId) {
+        PostEntity postEntity=postRepository.findByPostId(postId);
+        if(postEntity!=null){
+            return postMapper.EntityToDTO(postEntity);
+        }
+        return null;
+    }
+
+    @Override
+    public  Map<String, Object> findByCategoryAndDate(int category, String date, int idDoctor, int limit, int offset) {
+        Map<String, Object> response = new HashMap<>();
+        UserEntity user=userRepository.findByIdUser(idDoctor);
+        Pageable pageable = PageRequest.of(offset, limit);
+        // tạo thời gian bắt đầu và thời gian kết thúc bằng ngày đã được nhận vào
+        String dateStr = "2025-04-07";
+        LocalDate dateOf = LocalDate.parse(dateStr);
+        LocalDateTime startOfDay = dateOf.atStartOfDay();
+        System.out.println("bắt đầu: "+dateOf);
+        LocalDateTime endOfDay = dateOf.atTime(LocalTime.MAX);
+        System.out.println("Kết thúc: "+endOfDay);
+        Page<PostEntity> postPage = postRepository.findByCategoryIdAndDate(user.getDoctor().getDoctorId(),category,startOfDay,endOfDay,pageable);
+        List<PostDTO> postDTOList=new ArrayList<>();
+        for(PostEntity post : postPage){
+            postDTOList.add( postMapper.EntityToDTO(post));
+        }
+        response.put("posts", postDTOList);
+        response.put("totalPage",postPage.getTotalPages() );
+        return response;
+    }
+
+    @Override
+    public Map<String, Object> findByCategory(int id, int limit, int offset) {
+        Map<String, Object> response = new HashMap<>();
+        Pageable pageable = PageRequest.of(offset, limit);
+        Page<PostEntity> postPage=postRepository.findByCategory(id,pageable);
+        List<PostDTO> postDTOList=new ArrayList<>();
+        for(PostEntity post : postPage){
+            postDTOList.add( postMapper.EntityToDTO(post));
+        }
+        response.put("posts", postDTOList);
+        response.put("totalPage",postPage.getTotalPages() );
+        return response;
+    }
 }

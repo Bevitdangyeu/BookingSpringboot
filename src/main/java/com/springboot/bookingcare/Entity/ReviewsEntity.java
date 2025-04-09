@@ -12,7 +12,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Entity
-@Table(name="Reviews")
+@Table(name="Reviews",
+        indexes = {
+                @Index(name = "idx_Reviews_reviewsId", columnList = "reviewsId")
+        })
 @Getter
 @Setter
 @EntityListeners(AuditingEntityListener.class) // Kích hoạt auditing cho entity

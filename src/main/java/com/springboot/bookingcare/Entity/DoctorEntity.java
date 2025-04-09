@@ -10,7 +10,10 @@ import java.util.List;
 @Getter
 @Setter
 @Entity
-@Table(name="doctor")
+@Table(name="doctor",
+        indexes = {
+                @Index(name = "idx_doctor_doctorId", columnList = "doctorId")
+        })
 public class DoctorEntity {
     @Id
     @Column(name="doctorId")
