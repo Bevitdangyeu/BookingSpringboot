@@ -17,9 +17,7 @@ import java.util.TimeZone;
 @SpringBootApplication
 @EnableCaching
 @EnableJpaAuditing
-public class
-
-BookingcareApplication {
+public class BookingcareApplication {
 	public static void main(String[] args) {
 		SpringApplication.run(BookingcareApplication.class, args);
 	}

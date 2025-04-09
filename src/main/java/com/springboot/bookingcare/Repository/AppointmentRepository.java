@@ -7,6 +7,7 @@ import org.springframework.data.repository.CrudRepository;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Repository
@@ -14,4 +15,6 @@ public interface AppointmentRepository extends CrudRepository<AppointmentEntity,
     @Query("select a from AppointmentEntity a where a.user.idUser= :id")
     List<AppointmentEntity> findAllForUser(@Param("id") int id);
     AppointmentEntity findByAppointmentId(int appointmentId);
+    @Query("select a from AppointmentEntity a where a.doctor.doctorId= :doctorId and a.createAt BETWEEN :start AND :end order by a.createAt desc")
+    List<AppointmentEntity> findAllByDoctorId(@Param("doctorId") int doctorId, @Param("start") LocalDateTime start, @Param("end")LocalDateTime end);
 }

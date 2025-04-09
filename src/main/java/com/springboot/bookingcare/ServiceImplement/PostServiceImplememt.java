@@ -134,8 +134,7 @@ public class PostServiceImplememt implements PostService {
         UserEntity user=userRepository.findByIdUser(idDoctor);
         Pageable pageable = PageRequest.of(offset, limit);
         // tạo thời gian bắt đầu và thời gian kết thúc bằng ngày đã được nhận vào
-        String dateStr = "2025-04-07";
-        LocalDate dateOf = LocalDate.parse(dateStr);
+        LocalDate dateOf = LocalDate.parse(date);
         LocalDateTime startOfDay = dateOf.atStartOfDay();
         System.out.println("bắt đầu: "+dateOf);
         LocalDateTime endOfDay = dateOf.atTime(LocalTime.MAX);

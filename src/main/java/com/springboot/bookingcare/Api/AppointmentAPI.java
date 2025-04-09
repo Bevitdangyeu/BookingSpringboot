@@ -14,6 +14,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -51,5 +52,34 @@ public class AppointmentAPI {
             return appointmentService.findAllForUser(id);
         }
         return null;
+    }
+    @GetMapping("/doctor/appointment/{date}")
+    public List<AppointmentDTO> findAllByDoctorId(@PathVariable("date") String date)
+    {
+        Authentication authentication=SecurityContextHolder.getContext().getAuthentication();
+        if(authentication!=null){
+            UserDetails userDetails=(UserDetails)authentication.getPrincipal();
+            CustomeUserDetails user=(CustomeUserDetails) userDetails;
+            int id=user.getUser().getIdUser();
+            return appointmentService.findAllByDoctorId(id,date);
+        }
+        return null;
+    }
+    @PostMapping("/doctor/appointment/update/{appointmentId}/{status}")
+    public ResponseEntity<Map<String, Object>> updateStatus(
+            @PathVariable("appointmentId") int id,
+            @PathVariable("status") String status) {
+
+        AppointmentDTO updated = appointmentService.updateStatus(id, status);
+        Map<String, Object> response = new HashMap<>();
+
+        if (updated!=null) {
+            response.put("success", true);
+            response.put("appointment",updated);
+            return ResponseEntity.ok(response);
+        }
+        response.put("success", false);
+        response.put("appointment",null);
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
     }
 }

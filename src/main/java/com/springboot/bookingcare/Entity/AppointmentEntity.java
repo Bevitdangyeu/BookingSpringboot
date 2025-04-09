@@ -37,7 +37,7 @@ public class AppointmentEntity {
     @Column(name="dateOfBirth")
     private String dateOfBirth;
     @Column(name="createAt")
-    private LocalDate createAt;
+    private LocalDateTime createAt;
     @Column(name="date")
     private LocalDate date;
     @Column(name="isReviewed")
