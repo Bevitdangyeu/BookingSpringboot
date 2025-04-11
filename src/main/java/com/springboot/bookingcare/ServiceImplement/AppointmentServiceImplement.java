@@ -80,11 +80,9 @@ public class AppointmentServiceImplement implements AppointmentService {
 
     @Override
     public List<AppointmentDTO> findAllByDoctorId(int id,String date) {
-        LocalDate dateOf = LocalDate.parse(date);
-        LocalDateTime startOfDay = dateOf.atStartOfDay();
-        LocalDateTime endOfDay = dateOf.atTime(LocalTime.MAX);
+        LocalDate localDate = LocalDate.parse(date);
         UserEntity userEntity=userRepository.findByIdUser(id);
-        List<AppointmentEntity> appointmentEntityList=appointmentRepository.findAllByDoctorId(userEntity.getDoctor().getDoctorId(),startOfDay,endOfDay);
+        List<AppointmentEntity> appointmentEntityList=appointmentRepository.findAllByDoctorId(userEntity.getDoctor().getDoctorId(),localDate);
         if(!appointmentEntityList.isEmpty()){
             List<AppointmentDTO> appointmentDTOList=new ArrayList<>();
             for(AppointmentEntity appointmentEntity: appointmentEntityList){
