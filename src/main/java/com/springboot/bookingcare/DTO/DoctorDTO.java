@@ -17,4 +17,5 @@ public class DoctorDTO implements Serializable {
     private String description;
     private String phoneNumber;
     private UserDTO userDTO;
+    private String shortDescription;
 }

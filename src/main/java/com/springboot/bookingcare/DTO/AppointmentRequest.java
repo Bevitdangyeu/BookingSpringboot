@@ -30,4 +30,5 @@ public class AppointmentRequest implements Serializable  {
     private LocalDate date;
     private DoctorDTO doctor;
     private TimeDTO time;
+    private int idUser;
 }

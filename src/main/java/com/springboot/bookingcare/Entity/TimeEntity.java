@@ -22,7 +22,7 @@ public class TimeEntity {
     @Column(name="hide")
     private int hide;
     // quan hệ nhiều nhiều với bác sĩ
-    @ManyToMany
+    @ManyToMany(cascade = CascadeType.ALL)
     @JoinTable(name="Doctor_LichKham",
             joinColumns=@JoinColumn(name="idLichKham"),
             inverseJoinColumns = @JoinColumn(name="idDoctor")

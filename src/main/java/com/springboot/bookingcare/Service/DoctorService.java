@@ -9,4 +9,5 @@ public interface DoctorService {
     public List<DoctorDTO> findAllDoctor();
     public DoctorDTO findByDoctorId(int id);
     public DoctorDTO add(DoctorDTO doctor);
+    public DoctorDTO findByDoctorForEdit(int id);
 }

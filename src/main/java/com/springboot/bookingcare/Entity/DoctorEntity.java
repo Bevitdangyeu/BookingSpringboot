@@ -30,6 +30,8 @@ public class DoctorEntity {
     private String certificate; // giấy chứng nhận
     @Column (name="description",columnDefinition = "TEXT")
     private String description;
+    @Column (name="shortDescription",columnDefinition = "TEXT")
+    private String shortDescription;
     @Column(name="phoneNumber")
     private String phoneNumber;
     @OneToOne(cascade = CascadeType.ALL)
@@ -38,7 +40,7 @@ public class DoctorEntity {
     @ManyToOne(fetch=FetchType.EAGER)
     @JoinColumn(name="idHospital")
     private HospitalEntity hospitalId;
-    @ManyToMany(mappedBy = "doctor")
+    @ManyToMany(mappedBy = "doctor",cascade = CascadeType.ALL)
     private List<TimeEntity> time=new ArrayList<>();
     @OneToMany(mappedBy = "doctor")
     private List<AppointmentEntity> appointment=new ArrayList<>();

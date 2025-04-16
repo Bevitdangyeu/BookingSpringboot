@@ -147,4 +147,8 @@ public class PostAPI {
         }
         return pageableDTO;
     }
+    @GetMapping("/public/post/findByKey/{key}")
+    public List<PostDTO> findByKey(@PathVariable("key") String key){
+        return postService.findByKey(key);
+    }
 }

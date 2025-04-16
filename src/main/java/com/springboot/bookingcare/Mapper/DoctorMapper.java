@@ -27,6 +27,7 @@ public class DoctorMapper {
         doctorDTO.setCertificate(doctorEntity.getCertificate());
         doctorDTO.setIdDoctor(doctorEntity.getDoctorId());
         doctorDTO.setPhoneNumber(doctorEntity.getPhoneNumber());
+        doctorDTO.setShortDescription(doctorEntity.getShortDescription());
         doctorDTO.setUserDTO(userDto);
         return doctorDTO;
     }

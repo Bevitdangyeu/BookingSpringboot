@@ -41,6 +41,10 @@ public class AppointmentServiceImplement implements AppointmentService {
            TimeEntity time=timeRepository.findByTimeId(appointmentRequest.getTime().getTimeId());
            DoctorEntity doctor=doctorRepository.findByDoctorId(appointmentRequest.getDoctor().getIdDoctor());
            AppointmentEntity appointmentEntity=new AppointmentEntity();
+           if(appointmentRequest.getIdUser()!=0){
+               UserEntity userEntity=userRepository.findByIdUser(appointmentRequest.getIdUser());
+               appointmentEntity.setUser(userEntity);
+           }
            appointmentEntity.setAddress(appointmentRequest.getAddress());
            appointmentEntity.setDoctor(doctor);
            appointmentEntity.setDescription(appointmentRequest.getDescription());

@@ -12,6 +12,9 @@ import com.springboot.bookingcare.Repository.DoctorRepository;
 import com.springboot.bookingcare.Repository.PostRepository;
 import com.springboot.bookingcare.Repository.UserRepository;
 import com.springboot.bookingcare.Service.PostService;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
+import jakarta.persistence.Query;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -25,9 +28,12 @@ import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.ZoneId;
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 public class PostServiceImplememt implements PostService {
+    @PersistenceContext
+    private EntityManager entityManager;
     @Autowired
     CategoryRepository categoryRepository;
     @Autowired
@@ -161,5 +167,37 @@ public class PostServiceImplememt implements PostService {
         response.put("posts", postDTOList);
         response.put("totalPage",postPage.getTotalPages() );
         return response;
+    }
+
+    @Override
+    public List<PostDTO> findByKey(String key) {
+        // Bước 1: Cắt chuỗi từ khóa thành danh sách các từ
+        List<String> keywords = Arrays.stream(key.split("\\s+"))
+                .map(String::toLowerCase)
+                .toList();
+        // Bước 2: Tạo SQL động
+        StringBuilder sql = new StringBuilder("SELECT * FROM post WHERE ");
+        List<String> conditions = new ArrayList<>();
+
+        for (int i = 0; i < keywords.size(); i++) {
+            String param = ":kw" + i;
+            conditions.add("title ILIKE " + param +
+                    " OR content ILIKE " + param );
+        }
+
+        sql.append(String.join(" OR ", conditions));
+        // Bước 3: Tạo truy vấn
+        Query query = entityManager.createNativeQuery(sql.toString(), PostEntity.class);
+
+        for (int i = 0; i < keywords.size(); i++) {
+            query.setParameter("kw" + i, "%" + keywords.get(i) + "%");
+        }
+        List<PostEntity> listPost=query.getResultList();
+        List<PostDTO> postDTOList=new ArrayList<>();
+        for( PostEntity post:listPost){
+            postDTOList.add(postMapper.EntityToDTO(post));
+        }
+
+        return postDTOList;
     }
 }

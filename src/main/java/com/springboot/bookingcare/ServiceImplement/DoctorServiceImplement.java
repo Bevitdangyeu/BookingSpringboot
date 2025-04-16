@@ -35,7 +35,7 @@ public class DoctorServiceImplement implements DoctorService {
     HospitalRepository hospitalRepository;
     @Autowired
     RoleRepository roleRepository;
-    @Cacheable(value = "doctors",key = "'allDoctors'")
+    //@Cacheable(value = "doctors",key = "'allDoctors'")
     // @CacheEvict(value = "doctors", key = "'allDoctors'") xóa cache khi có update
     //  @CachePut(value = "doctors", key = "'allDoctors'")    // Cập nhật lại cache
     @Override
@@ -53,14 +53,24 @@ public class DoctorServiceImplement implements DoctorService {
     public DoctorDTO findByDoctorId(int id) {
         return doctorMapper.EntityToDTO(doctorRepository.findByDoctorId(id));
     }
+    @Override
+    public DoctorDTO findByDoctorForEdit(int id) {
+        return doctorMapper.EntityToDTO(doctorRepository.findByUserId(id));
+    }
     @Transactional
     @Override
     public DoctorDTO add(DoctorDTO doctor) {
         DoctorEntity doctorEntity=new DoctorEntity();
         UserEntity userEntity=new UserEntity();
+        if(doctor.getIdDoctor()==0){
+            userEntity.setPassword(passwordEncoder.encode(doctor.getUserDTO().getPassword()));
+            userEntity.setUserName(doctor.getUserDTO().getUsername());
+        }
         if(doctor.getIdDoctor()!=0){
             doctorEntity=doctorRepository.findByDoctorId(doctor.getIdDoctor());
             userEntity=userRepository.findByIdUser(doctor.getUserDTO().getIdUser());
+            userEntity.setUserName(userEntity.getUserName());
+            userEntity.setPassword(userEntity.getPassword());
         }
         HospitalEntity hospitalEntity=hospitalRepository.findByHospitalName(doctor.getHospital());
         RoleEntity role=roleRepository.findByRoleCode(doctor.getUserDTO().getRole());
@@ -70,14 +80,14 @@ public class DoctorServiceImplement implements DoctorService {
         doctorEntity.setExpertise(doctor.getExpertise());
         doctorEntity.setPhoneNumber(doctor.getPhoneNumber());
         doctorEntity.setHospitalId(hospitalEntity);
+        doctorEntity.setShortDescription(doctor.getShortDescription());
         doctorEntity.setUser(userEntity);
         doctorRepository.save(doctorEntity);
         // thêm thông tin cho user
+        userEntity.setImage(doctor.getUserDTO().getImage());
         userEntity.setAddress(doctor.getUserDTO().getAddress());
         userEntity.setEmail(doctor.getUserDTO().getAddress());
         userEntity.setFullName(doctor.getUserDTO().getFullName());
-        userEntity.setUserName(doctor.getUserDTO().getUsername());
-        userEntity.setPassword(passwordEncoder.encode(doctor.getUserDTO().getPassword()));
         userEntity.setDoctor(doctorEntity);
         userEntity.setRole(role);
         userEntity=userRepository.save(userEntity);

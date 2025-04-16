@@ -17,4 +17,5 @@ public interface PostService {
     public PostDTO findByPostId(int postId);
     public  Map<String, Object> findByCategoryAndDate(int category, String date, int idDoctor, int limit, int offset);
     public Map<String, Object> findByCategory(int id, int limit, int offset);
+    public List<PostDTO> findByKey(String key);
 }
