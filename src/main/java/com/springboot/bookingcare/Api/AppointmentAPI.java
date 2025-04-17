@@ -82,4 +82,21 @@ public class AppointmentAPI {
         response.put("appointment",null);
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
     }
+    @PostMapping("/public/appointment/update/{appointmentId}/{status}")
+    public ResponseEntity<Map<String, Object>> Cancel(
+            @PathVariable("appointmentId") int id,
+            @PathVariable("status") String status) {
+
+        AppointmentDTO updated = appointmentService.updateStatus(id, status);
+        Map<String, Object> response = new HashMap<>();
+
+        if (updated!=null) {
+            response.put("success", true);
+            response.put("appointment",updated);
+            return ResponseEntity.ok(response);
+        }
+        response.put("success", false);
+        response.put("appointment",null);
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
+    }
 }

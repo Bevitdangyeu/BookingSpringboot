@@ -57,7 +57,7 @@ public class AppointmentServiceImplement implements AppointmentService {
            appointmentEntity.setPhoneNumber(appointmentRequest.getPhoneNumber());
            appointmentEntity.setStatus("Pending approval");
            appointmentEntity.setTime(time);
-           appointmentEntity.setReviewed(true);
+           appointmentEntity.setReviewed(false);
            appointmentEntity.setDate(appointmentRequest.getDate());
            appointmentRepository.save(appointmentEntity);
            return true;

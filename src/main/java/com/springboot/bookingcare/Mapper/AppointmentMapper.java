@@ -31,6 +31,7 @@ public class AppointmentMapper {
         appointmentDTO.setStatus(appointmentEntity.getStatus());
         appointmentDTO.setReviewed(appointmentEntity.isReviewed());
         appointmentDTO.setDate(appointmentEntity.getDate());
+        appointmentDTO.setAddress(appointmentEntity.getAddress());
         return appointmentDTO;
     }
 }

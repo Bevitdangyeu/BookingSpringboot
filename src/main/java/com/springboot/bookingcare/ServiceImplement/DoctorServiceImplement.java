@@ -73,7 +73,7 @@ public class DoctorServiceImplement implements DoctorService {
             userEntity.setPassword(userEntity.getPassword());
         }
         HospitalEntity hospitalEntity=hospitalRepository.findByHospitalName(doctor.getHospital());
-        RoleEntity role=roleRepository.findByRoleCode(doctor.getUserDTO().getRole());
+        RoleEntity role=roleRepository.findByRoleCode("DOCTOR");
         doctorEntity.setCertificate(doctor.getCertificate());
         doctorEntity.setDescription(doctor.getDescription());
         doctorEntity.setExperience(doctor.getExperience());

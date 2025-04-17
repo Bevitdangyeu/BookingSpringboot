@@ -23,4 +23,5 @@ public class AppointmentDTO {
     private TimeDTO time;
     private LocalDate date;
     private boolean isReviewed;
+    private String email;
 }
