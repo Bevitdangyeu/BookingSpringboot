@@ -131,6 +131,6 @@ public class SecurityConfig implements WebMvcConfigurer{
     public void addResourceHandlers(ResourceHandlerRegistry registry) {
         // Nếu ảnh được truy cập bằng: http://localhost:8080/uploads/image.jpg
         registry.addResourceHandler("/uploads/**")
-                .addResourceLocations("file:uploads/"); // đường dẫn tương đối
+                .addResourceLocations("file:uploads/");
     }
 }

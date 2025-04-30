@@ -19,6 +19,9 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.time.YearMonth;
+import java.time.format.DateTimeFormatter;
+import java.time.temporal.TemporalAdjusters;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -86,7 +89,7 @@ public class AppointmentServiceImplement implements AppointmentService {
     public List<AppointmentDTO> findAllByDoctorId(int id,String date) {
         LocalDate localDate = LocalDate.parse(date);
         UserEntity userEntity=userRepository.findByIdUser(id);
-        List<AppointmentEntity> appointmentEntityList=appointmentRepository.findAllByDoctorId(userEntity.getDoctor().getDoctorId(),localDate);
+        List<AppointmentEntity> appointmentEntityList=appointmentRepository.findAllByDoctorId(userEntity.getDoctor().getDoctorId(),localDate,localDate);
         if(!appointmentEntityList.isEmpty()){
             List<AppointmentDTO> appointmentDTOList=new ArrayList<>();
             for(AppointmentEntity appointmentEntity: appointmentEntityList){
@@ -104,6 +107,24 @@ public class AppointmentServiceImplement implements AppointmentService {
             appointmentEntity.setStatus(status);
             appointmentRepository.save(appointmentEntity);
             return appointmentMapper.EntityToDTO(appointmentEntity);
+        }
+        return null;
+    }
+
+    @Override
+    public List<AppointmentDTO> findByMonth(int id, String date) {
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM");
+        YearMonth yearMonth = YearMonth.parse(date, formatter);
+        LocalDate startMonth = yearMonth.atDay(1); // ngày đầu tháng
+        LocalDate endMonth = yearMonth.atEndOfMonth(); // ngày cuối tháng
+        UserEntity userEntity=userRepository.findByIdUser(id);
+        List<AppointmentEntity> appointmentEntityList=appointmentRepository.findAllByDoctorId(userEntity.getDoctor().getDoctorId(),startMonth,endMonth);
+        if(!appointmentEntityList.isEmpty()){
+            List<AppointmentDTO> appointmentDTOList=new ArrayList<>();
+            for(AppointmentEntity appointmentEntity: appointmentEntityList){
+                appointmentDTOList.add(appointmentMapper.EntityToDTO(appointmentEntity));
+            }
+            return appointmentDTOList;
         }
         return null;
     }

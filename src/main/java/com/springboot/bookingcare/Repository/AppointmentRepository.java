@@ -16,6 +16,6 @@ public interface AppointmentRepository extends CrudRepository<AppointmentEntity,
     @Query("select a from AppointmentEntity a where a.user.idUser= :id")
     List<AppointmentEntity> findAllForUser(@Param("id") int id);
     AppointmentEntity findByAppointmentId(int appointmentId);
-    @Query("select a from AppointmentEntity a where a.doctor.doctorId= :doctorId and a.date BETWEEN :date AND :date order by a.createAt desc")
-    List<AppointmentEntity> findAllByDoctorId(@Param("doctorId") int doctorId, @Param("date") LocalDate date);
+    @Query("select a from AppointmentEntity a where a.doctor.doctorId= :doctorId and a.date BETWEEN :startDate AND :endDate order by a.createAt desc")
+    List<AppointmentEntity> findAllByDoctorId(@Param("doctorId") int doctorId,@Param("startDate") LocalDate startDate, @Param("endDate") LocalDate endDate);
 }

@@ -11,4 +11,5 @@ public interface AppointmentService {
     public AppointmentDTO findByAppointmentId(int id);
     public List<AppointmentDTO> findAllByDoctorId(int id,String date);
     public AppointmentDTO updateStatus(int AppointmentId, String status);
+    public List<AppointmentDTO> findByMonth(int id,String date);
 }

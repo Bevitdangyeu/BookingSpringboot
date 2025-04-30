@@ -47,7 +47,7 @@ public class AppointmentAPI {
             CustomeUserDetails custome=(CustomeUserDetails) user;
             int id=custome.getUser().getIdUser();
             for(AppointmentDTO a: appointmentService.findAllForUser(id)){
-                System.out.println(a);
+                System.out.println(a.getAppointmentId());
             }
             return appointmentService.findAllForUser(id);
         }
@@ -62,6 +62,17 @@ public class AppointmentAPI {
             CustomeUserDetails user=(CustomeUserDetails) userDetails;
             int id=user.getUser().getIdUser();
             return appointmentService.findAllByDoctorId(id,date);
+        }
+        return null;
+    }
+    @GetMapping("/doctor/appointment/statistical/{month}")
+    public  List<AppointmentDTO> findAllByMonth(@PathVariable("month")String month){
+        Authentication authentication=SecurityContextHolder.getContext().getAuthentication();
+        if(authentication!=null){
+            UserDetails userDetails=(UserDetails)authentication.getPrincipal();
+            CustomeUserDetails user=(CustomeUserDetails) userDetails;
+            int id=user.getUser().getIdUser();
+            return appointmentService.findByMonth(id,month);
         }
         return null;
     }
