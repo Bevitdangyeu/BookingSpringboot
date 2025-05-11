@@ -49,8 +49,6 @@ public class ReviewsAPI {
                reviewsDTO = reviewsService.add(reviewsDTO);
                response.put("Message", "Đánh giá đã được gửi");
                // gửi review đến người nhận
-               System.out.println("✅ Gửi review đến: /topic/profile/" + reviewsDTO.getDoctor().getIdDoctor());
-               System.out.println("✅ Gửi review đến: /topic/reviewer/" + reviewsDTO.getAppointment().getAppointmentId());
                messagingTemplate.convertAndSend("/topic/profile/" + reviewsDTO.getDoctor().getIdDoctor(), reviewsDTO);
                messagingTemplate.convertAndSend("/topic/reviewer/" + reviewsDTO.getAppointment().getAppointmentId(), response);
                return ResponseEntity.ok(response);
@@ -63,6 +61,38 @@ public class ReviewsAPI {
            response.put("Message","Thất bại! vui lòng gửi lại.");
            return ResponseEntity.status(HttpStatus.CONFLICT).body(response);
        }
+        return null;
+    }
+    // hàm cập nhật review
+    @MessageMapping("user/review/update")
+    public ResponseEntity<Map<String,String>> updateReview(@Payload ReviewsDTO reviewsDTO,SimpMessageHeaderAccessor headerAccessor){
+        Map<String,String> response=new HashMap<>();
+        // lấy thông tin user từ headerAccessor
+        try{
+            Principal principal = (Principal) headerAccessor.getSessionAttributes().get("user");
+
+            if (principal instanceof UsernamePasswordAuthenticationToken) {
+                UsernamePasswordAuthenticationToken authToken = (UsernamePasswordAuthenticationToken) principal;
+                String userId = (String) authToken.getPrincipal(); // Lấy userId từ authToken
+                System.out.println("id: "+userId);
+                UserDTO userDTO = new UserDTO();
+                userDTO.setIdUser(Integer.parseInt(userId));
+                reviewsDTO.setUser(userDTO);
+                reviewsDTO = reviewsService.add(reviewsDTO);
+                response.put("Message", "Đánh giá đã được gửi");
+                // gửi review đến người nhận
+                messagingTemplate.convertAndSend("/topic/profile/" + reviewsDTO.getDoctor().getIdDoctor(), reviewsDTO);
+                messagingTemplate.convertAndSend("/topic/reviewer/" + reviewsDTO.getAppointment().getAppointmentId(), response);
+                return ResponseEntity.ok(response);
+            }
+            //  }
+            //  else{
+            //      return ResponseEntity.status(HttpStatus.CONFLICT).body(response);
+            // }
+        } catch (Exception e) {
+            response.put("Message","Thất bại! vui lòng gửi lại.");
+            return ResponseEntity.status(HttpStatus.CONFLICT).body(response);
+        }
         return null;
     }
     @GetMapping("/public/getReviews/{id}")

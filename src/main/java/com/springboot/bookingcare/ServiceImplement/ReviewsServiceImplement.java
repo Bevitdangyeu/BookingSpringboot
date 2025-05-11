@@ -34,7 +34,13 @@ public class ReviewsServiceImplement implements ReviewsService {
     @Transactional
     @Override
     public ReviewsDTO add(ReviewsDTO reviewsDTO) {
-        ReviewsEntity reviewsEntity=new ReviewsEntity();
+        ReviewsEntity reviewsEntity;
+        if(reviewsDTO.getReviewsId()!=0){
+            reviewsEntity=reviewsRepository.findByReviewsId(reviewsDTO.getReviewsId());
+        }
+        else {
+            reviewsEntity = new ReviewsEntity();
+        }
         AppointmentEntity appointment=appointmentRepository.findByAppointmentId(reviewsDTO.getAppointment().getAppointmentId());
         UserEntity user=userRepository.findByIdUser(reviewsDTO.getUser().getIdUser());
         DoctorEntity doctor=doctorRepository.findByDoctorId(reviewsDTO.getDoctor().getIdDoctor());
