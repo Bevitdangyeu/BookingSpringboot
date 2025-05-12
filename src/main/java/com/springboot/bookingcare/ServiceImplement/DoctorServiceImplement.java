@@ -57,6 +57,20 @@ public class DoctorServiceImplement implements DoctorService {
     public DoctorDTO findByDoctorForEdit(int id) {
         return doctorMapper.EntityToDTO(doctorRepository.findByUserId(id));
     }
+
+    @Override
+    public List<DoctorDTO> findByExpertise(String expertise) {
+        List<DoctorEntity> listDoctor=doctorRepository.findByExpertise(expertise);
+        if(listDoctor!=null){
+            List<DoctorDTO> listDoctorDTO=new ArrayList<>();
+            for(DoctorEntity doctorEntity:listDoctor){
+                listDoctorDTO.add(doctorMapper.EntityToDTO(doctorEntity));
+            }
+            return listDoctorDTO;
+        }
+        return null;
+    }
+
     @Transactional
     @Override
     public DoctorDTO add(DoctorDTO doctor) {

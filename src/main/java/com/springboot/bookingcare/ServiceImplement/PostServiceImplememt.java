@@ -23,10 +23,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.LocalTime;
-import java.time.ZoneId;
+import java.time.*;
+import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -135,17 +133,14 @@ public class PostServiceImplememt implements PostService {
     }
 
     @Override
-    public  Map<String, Object> findByCategoryAndDate(int category, String date, int idDoctor, int limit, int offset) {
+    public  Map<String, Object> findByCategoryAndDate(int category, String month, int idDoctor, int limit, int offset) {
         Map<String, Object> response = new HashMap<>();
         UserEntity user=userRepository.findByIdUser(idDoctor);
         Pageable pageable = PageRequest.of(offset, limit);
-        // tạo thời gian bắt đầu và thời gian kết thúc bằng ngày đã được nhận vào
-        LocalDate dateOf = LocalDate.parse(date);
-        LocalDateTime startOfDay = dateOf.atStartOfDay();
-        System.out.println("bắt đầu: "+dateOf);
-        LocalDateTime endOfDay = dateOf.atTime(LocalTime.MAX);
-        System.out.println("Kết thúc: "+endOfDay);
-        Page<PostEntity> postPage = postRepository.findByCategoryIdAndDate(user.getDoctor().getDoctorId(),category,startOfDay,endOfDay,pageable);
+        YearMonth ym = YearMonth.parse(month);
+        LocalDateTime start = ym.atDay(1).atStartOfDay();
+        LocalDateTime end = ym.atEndOfMonth().atTime(23, 59, 59);
+        Page<PostEntity> postPage = postRepository.findByCategoryIdAndDate(user.getDoctor().getDoctorId(),category,start,end,pageable);
         List<PostDTO> postDTOList=new ArrayList<>();
         for(PostEntity post : postPage){
             postDTOList.add( postMapper.EntityToDTO(post));

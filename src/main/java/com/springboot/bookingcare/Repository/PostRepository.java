@@ -8,6 +8,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Repository;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -23,7 +24,7 @@ public interface PostRepository extends CrudRepository<PostEntity,Integer>,PostR
     @Query("SELECT p FROM PostEntity p where p.doctor.doctorId = :doctorId  ORDER BY p.createAt DESC")
     Page<PostEntity> findPostsPageable(@Param("doctorId") int doctorId, Pageable pageable);
     @Query("select p from PostEntity p where p.doctor.doctorId = :doctorId and p.categoryEntity.categoryId= :categoryId and p.createAt BETWEEN :start AND :end")
-    Page<PostEntity> findByCategoryIdAndDate(@Param("doctorId") int doctorId, @Param("categoryId") int categoryId, @Param("start")LocalDateTime start,@Param("end") LocalDateTime end,Pageable pageable);
+    Page<PostEntity> findByCategoryIdAndDate(@Param("doctorId") int doctorId, @Param("categoryId") int categoryId, @Param("start") LocalDateTime start, @Param("end") LocalDateTime end, Pageable pageable);
     @Query("select p from PostEntity p where p.categoryEntity.categoryId= :categoryId")
     public Page<PostEntity> findByCategory(@Param("categoryId") int categoryId,Pageable page);
 }

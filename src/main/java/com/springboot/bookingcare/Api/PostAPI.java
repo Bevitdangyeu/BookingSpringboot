@@ -112,8 +112,8 @@ public class PostAPI {
         return ResponseEntity.ok(response);
     }
     // lấy ra bài viết theo mã chủ đề và ngày đăng tải
-    @GetMapping("/doctor/post/{categoryId}/{date}/{page}")
-    public PageableDTO filterByCategoryAndDate(@PathVariable("categoryId")int categoryId, @PathVariable("date")String date,@PathVariable("page") int page) {
+    @GetMapping("/doctor/post/{categoryId}/{month}/{page}")
+    public PageableDTO filterByCategoryAndDate(@PathVariable("categoryId")int categoryId, @PathVariable("month")String month,@PathVariable("page") int page) {
         // lấy lên thông tin user hiện tại
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         if (authentication != null) {
@@ -122,7 +122,7 @@ public class PostAPI {
             CustomeUserDetails custome = (CustomeUserDetails) user;
             int id = custome.getUser().getIdUser();
             PageableDTO pageableDTO = new PageableDTO();
-            Map<String, Object> listPost = postService.findByCategoryAndDate(categoryId,date,id, 4, page);
+            Map<String, Object> listPost = postService.findByCategoryAndDate(categoryId,month,id, 4, page);
             pageableDTO.setCurrentPage(page);
             pageableDTO.setListPostDTO(((List<PostDTO>) listPost.get("posts")));
             pageableDTO.setTotalPages((int)listPost.get("totalPage") );
@@ -136,7 +136,7 @@ public class PostAPI {
     }
     @GetMapping("/public/post/category/{id}/{page}")
     public PageableDTO findByCategory(@PathVariable("id")int id,@PathVariable("page") int page){
-        Map<String, Object> listPost = postService.findByCategory(id,10,page);
+        Map<String, Object> listPost = postService.findByCategory(id,4,page);
         PageableDTO pageableDTO = new PageableDTO();
         pageableDTO.setCurrentPage(page);
         pageableDTO.setListPostDTO(((List<PostDTO>) listPost.get("posts")));

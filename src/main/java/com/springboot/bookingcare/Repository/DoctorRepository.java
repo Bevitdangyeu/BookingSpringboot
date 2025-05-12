@@ -14,4 +14,5 @@ public interface DoctorRepository extends CrudRepository<DoctorEntity,Integer> {
     DoctorEntity findByDoctorId(int doctorId);
     @Query("select d from DoctorEntity d where d.user.idUser= :idUser")
     DoctorEntity findByUserId(@Param("idUser") int idUser);
+    List<DoctorEntity> findByExpertise(String expertise);
 }

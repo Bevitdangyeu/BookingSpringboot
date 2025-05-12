@@ -4,6 +4,7 @@ import com.springboot.bookingcare.DTO.DoctorDTO;
 import com.springboot.bookingcare.Service.DoctorService;
 import com.springboot.bookingcare.ServiceImplement.CustomeUserDetails;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -12,6 +13,8 @@ import org.springframework.web.bind.annotation.*;
 import javax.print.Doc;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 
 @RestController
@@ -34,9 +37,16 @@ public class DoctorAPI {
     public DoctorDTO add(@RequestBody DoctorDTO doctor){
         return doctorService.add(doctor);
     }
-    @PostMapping("/update")
-    public DoctorDTO update(@RequestBody DoctorDTO doctor){
-        return doctorService.add(doctor);
+//    @PostMapping("/update")
+//    public DoctorDTO update(@RequestBody DoctorDTO doctor){
+//        return doctorService.add(doctor);
+//    }
+    @GetMapping("/findByExpertise/{expertise}")
+    public ResponseEntity<List<DoctorDTO>> findByExpertise(@PathVariable("expertise") String expertise){
+        List<DoctorDTO> listDoctor=doctorService.findByExpertise(expertise);
+        if(listDoctor==null||listDoctor.isEmpty()){
+            return ResponseEntity.ok(Collections.emptyList());
+        }
+        return ResponseEntity.ok(listDoctor);
     }
-
 }

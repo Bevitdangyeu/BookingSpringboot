@@ -10,4 +10,5 @@ public interface DoctorService {
     public DoctorDTO findByDoctorId(int id);
     public DoctorDTO add(DoctorDTO doctor);
     public DoctorDTO findByDoctorForEdit(int id);
+    public List<DoctorDTO> findByExpertise(String expertise);
 }
