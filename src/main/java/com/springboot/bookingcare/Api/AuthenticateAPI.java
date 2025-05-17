@@ -12,12 +12,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
@@ -33,26 +35,32 @@ public class AuthenticateAPI {
     @Autowired
     UserService userService;
     @PostMapping("/authenticate")
-    public AuthenticationResponse login(@RequestBody AuthenticationRequest authentication) throws Exception {
-        // tạo một đối tượng với username và password
-        //new UsernamePasswordAuthenticationToken(authRequest.getUserName(), authRequest.getPassword()) là một đối tượng lưu trữ username và pass mà người dùng đã nhập
-        authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(authentication.getUsername(), authentication.getPassword())
-        );
-        //nếu quá trình xác thực hoàn tất thì lấy lại thông tin người dùng và tạo token
-        UserDetails user=customeUserDetailService.loadUserByUsername(authentication.getUsername());
-        try{
-            // tìm user đó trong cơ sở dữ liệu
-            UserDTO userDTO=userService.findByUserName(user.getUsername());
-            AuthenticationResponse authenticationResponse=jwt.generateToken(user.getUsername(),userDTO.getIdUser(),userDTO.getRole());
-            // kiểm tra permission để chỉ định role
-            System.out.println("Authorities: "+user.getAuthorities().size());
-            List<GrantedAuthority> grantedAuthorityList=new ArrayList<>(user.getAuthorities());
-            authenticationResponse.setRole(determineRole(grantedAuthorityList));
-            return authenticationResponse;
+    public ResponseEntity<?> login(@RequestBody AuthenticationRequest authentication) throws Exception {
+        try {
+            authenticationManager.authenticate(
+                    new UsernamePasswordAuthenticationToken(
+                            authentication.getUsername(), authentication.getPassword()
+                    )
+            );
+        } catch (BadCredentialsException e) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Tên đăng nhập hoặc mật khẩu không đúng");
+        } catch (UsernameNotFoundException e) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Tài khoản không tồn tại hoặc đã bị vô hiệu hóa");
         } catch (Exception e) {
-            throw new RuntimeException(e);
+            // Log the exception for debugging
+            e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Đã xảy ra lỗi trong quá trình đăng nhập");
         }
+
+        System.out.println("Authentication successful for user: " + authentication.getUsername());
+        UserDetails user = customeUserDetailService.loadUserByUsername(authentication.getUsername());
+        UserDTO userDTO = userService.findByUserName(user.getUsername());
+        AuthenticationResponse authenticationResponse = jwt.generateToken(user.getUsername(), userDTO.getIdUser(), userDTO.getRole());
+
+        List<GrantedAuthority> grantedAuthorityList = new ArrayList<>(user.getAuthorities());
+        authenticationResponse.setRole(determineRole(grantedAuthorityList));
+
+        return ResponseEntity.ok(authenticationResponse);
     }
     private String determineRole(List<GrantedAuthority> authorities) {
         if (authorities.contains(new SimpleGrantedAuthority("CREATE")) &&

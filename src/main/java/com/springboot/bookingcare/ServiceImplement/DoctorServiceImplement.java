@@ -41,7 +41,7 @@ public class DoctorServiceImplement implements DoctorService {
     @Override
     public List<DoctorDTO> findAllDoctor() {
         System.out.println("Vào serivce để lấy danh sách bác sĩ vào lúc: "+ LocalDateTime.now());
-        List<DoctorEntity> list=doctorRepository.findAll();
+        List<DoctorEntity> list=doctorRepository.findAllDoctor();
         List<DoctorDTO> doctorDTOList=new ArrayList<>();
         for(DoctorEntity doctorEntity:list){
             doctorDTOList.add(doctorMapper.EntityToDTO(doctorEntity));

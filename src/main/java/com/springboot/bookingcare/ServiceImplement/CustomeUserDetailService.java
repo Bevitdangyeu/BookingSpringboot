@@ -10,27 +10,31 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
-
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import java.util.ArrayList;
 import java.util.List;
 @Service
 public class CustomeUserDetailService implements UserDetailsService {
+    private static final Logger logger = LoggerFactory.getLogger(CustomeUserDetailService.class);
     @Autowired
     UserRepository userRepository;
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        UserEntity userEntity=userRepository.findByUserName(username);
-        if(userEntity==null){
-            throw new UsernameNotFoundException("User not found");
+        logger.info("Attempting to load user: {}", username);
+        UserEntity userEntity = userRepository.findByUserNameAndActiveTrue(username);
+        if (userEntity == null) {
+            logger.warn("User not found or inactive: {}", username);
+            //return new CustomeUserDetails(null,null);
+           throw new UsernameNotFoundException("User not found");
         }
-        List<GrantedAuthority> grantedAuthorityList=new ArrayList<>();
-        if(userEntity.getRole()!=null){
-            for(PermissionEntity permisstion:userEntity.getRole().getPermissions()){
-                grantedAuthorityList.add(new SimpleGrantedAuthority(permisstion.getPermissionCode()));
+        logger.info("User found: {}", username);
+        List<GrantedAuthority> grantedAuthorityList = new ArrayList<>();
+        if (userEntity.getRole() != null) {
+            for (PermissionEntity permission : userEntity.getRole().getPermissions()) {
+                grantedAuthorityList.add(new SimpleGrantedAuthority(permission.getPermissionCode()));
             }
         }
-        // trả về một UserDetial( ở đây trả về một UserDetailCustom)
-        CustomeUserDetails userDetails=new CustomeUserDetails(userEntity,grantedAuthorityList);
-        return userDetails;
+        return new CustomeUserDetails(userEntity, grantedAuthorityList);
     }
 }

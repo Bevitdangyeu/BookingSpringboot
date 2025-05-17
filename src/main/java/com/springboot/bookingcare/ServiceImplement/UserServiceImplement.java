@@ -23,7 +23,7 @@ public class UserServiceImplement implements UserService {
     RoleRepository roleRepository;
     @Override
     public UserDTO findByUserName(String userName) {
-        UserEntity userEntity= userRepository.findByUserName(userName);
+        UserEntity userEntity= userRepository.findByUserNameAndActiveTrue(userName);
         return userMapper.EntityToDTO(userEntity);
     }
 
@@ -39,4 +39,5 @@ public class UserServiceImplement implements UserService {
         userEntity.setImage("avtDefault.jpg");
         return userMapper.EntityToDTO(userRepository.save(userEntity));
     }
+
 }

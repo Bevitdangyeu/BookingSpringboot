@@ -18,7 +18,7 @@ public class DoctorMapper {
         userDto.setFullName(doctorEntity.getUser().getFullName());
         userDto.setRole(doctorEntity.getUser().getRole().getRoleCode());
         userDto.setAddress(doctorEntity.getUser().getAddress());
-
+        userDto.setActive(doctorEntity.getUser().isActive());
         doctorDTO.setDescription(doctorEntity.getDescription());
         doctorDTO.setExperience(doctorEntity.getExperience());
         doctorDTO.setExpertise(doctorEntity.getExpertise());

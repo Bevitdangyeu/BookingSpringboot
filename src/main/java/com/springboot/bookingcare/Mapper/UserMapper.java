@@ -15,6 +15,7 @@ public class UserMapper {
         userDto.setFullName(userEntity.getFullName());
         userDto.setRole(userEntity.getRole().getRoleCode());
         userDto.setAddress(userEntity.getAddress());
+        userDto.setActive(userEntity.isActive());
         return userDto;
     }
 }

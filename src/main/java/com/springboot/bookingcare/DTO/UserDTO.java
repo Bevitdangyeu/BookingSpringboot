@@ -18,5 +18,6 @@ public class UserDTO implements Serializable {
     private String password;
     private String coverPhoto;
     private String address;
+    private boolean active;
 
 }

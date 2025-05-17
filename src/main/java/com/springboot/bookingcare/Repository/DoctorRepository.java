@@ -11,6 +11,8 @@ import java.util.List;
 @Repository
 public interface DoctorRepository extends CrudRepository<DoctorEntity,Integer> {
     List<DoctorEntity> findAll();
+    @Query("select d from DoctorEntity d where d.user.active=true")
+    List<DoctorEntity> findAllDoctor();
     DoctorEntity findByDoctorId(int doctorId);
     @Query("select d from DoctorEntity d where d.user.idUser= :idUser")
     DoctorEntity findByUserId(@Param("idUser") int idUser);

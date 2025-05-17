@@ -8,6 +8,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.authorization.AuthorizationDecision;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -41,6 +42,8 @@ public class SecurityConfig implements WebMvcConfigurer{
     CustomeUserDetailService customeUserDetailService;
     @Autowired JwtRequestFilter jwtRequestFilter;
     @Autowired CustomeAccessDeniedHandler customeAccessDeniedHandler;
+    @Autowired
+    CustomAuthenticationEntryPoint customAuthenticationEntryPoint;
     //SecurityContext sẽ được kế thừa từ Thread cha sang các Thread con,
     public void init() {
         SecurityContextHolder.setStrategyName(SecurityContextHolder.MODE_INHERITABLETHREADLOCAL);
@@ -93,6 +96,10 @@ public class SecurityConfig implements WebMvcConfigurer{
                         .requestMatchers("/user/**").hasAnyAuthority("READ")
                         .anyRequest().authenticated()
                 )
+                .exceptionHandling(exception -> exception
+                        .authenticationEntryPoint(customAuthenticationEntryPoint)
+                        .accessDeniedHandler(accessDeniedHandler())
+                )
                 // cài đặt đi qua jwt trước
                 .addFilterBefore(jwtRequestFilter, UsernamePasswordAuthenticationFilter.class)
                 .sessionManagement(session -> session
@@ -112,15 +119,26 @@ public class SecurityConfig implements WebMvcConfigurer{
         source.registerCorsConfiguration("/**", configuration);
         return source;
     }
-    @SuppressWarnings("removal")
+    // cấu hình thêm phần này để nếu sai mật khẩu hoặc người dùng không hợp lệ thì sẽ ném ra lỗi thật sự và dừng lại, và không cố gắng retry  nhiều lần dẫn đến lỗi vô tận
+    @Bean
+    public DaoAuthenticationProvider daoAuthenticationProvider() {
+        DaoAuthenticationProvider provider = new DaoAuthenticationProvider();
+        provider.setUserDetailsService(userDetailsService()); // sử dụng service của bạn
+        provider.setPasswordEncoder(passwordEncoder());      // sử dụng password encoder của bạn
+        provider.setHideUserNotFoundExceptions(false);       // tắt hideUserNotFoundExceptions
+        return provider;
+    }
+
     @Bean
     public AuthenticationManager authenticationManager(HttpSecurity http) throws Exception {
-        return http.getSharedObject(AuthenticationManagerBuilder.class)
-                .userDetailsService(userDetailsService())
-                .passwordEncoder(passwordEncoder())
-                .and()
-                .build();
+        AuthenticationManagerBuilder authBuilder =
+                http.getSharedObject(AuthenticationManagerBuilder.class);
+
+        authBuilder.authenticationProvider(daoAuthenticationProvider());
+
+        return authBuilder.build();
     }
+
     // cấu hình bỏ qua những tài nguyên tĩnh
     @Bean
     public WebSecurityCustomizer webSecurityCustomizer() {
@@ -134,3 +152,15 @@ public class SecurityConfig implements WebMvcConfigurer{
                 .addResourceLocations("file:uploads/");
     }
 }
+
+
+
+//@SuppressWarnings("remo
+//    @Bean
+//    public AuthenticationManager authenticationManager(HttpSecurity http) throws Exception {
+//        return http.getSharedObject(AuthenticationManagerBuilder.class)
+//                .userDetailsService(userDetailsService())
+//                .passwordEncoder(passwordEncoder())
+//                .and()
+//                .build();
+//    }

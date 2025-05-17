@@ -13,6 +13,7 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
@@ -73,19 +74,27 @@ public class JwtRequestFilter extends OncePerRequestFilter {
                 }
                 // token hợp lệ
                 if(username!=null&&jwt.validateToken(token)==200&& SecurityContextHolder.getContext().getAuthentication() == null){
-                    UserDetails userDetails = customeUserDetailService.loadUserByUsername(username);
-                    CustomeUserDetails customUserDetail = (CustomeUserDetails) userDetails;
-                    UsernamePasswordAuthenticationToken authToken
-                            =new UsernamePasswordAuthenticationToken(customUserDetail,null,userDetails.getAuthorities());
-                    SecurityContextHolder.getContext().setAuthentication(authToken);
-                    Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-                    UserDetails a = (UserDetails) authentication.getPrincipal();
-                    CustomeUserDetails b = (CustomeUserDetails) a;
-                    Authentication authenticationn= SecurityContextHolder.getContext().getAuthentication();
-                    UserDetails user=(UserDetails) authentication.getPrincipal();
-                    // ép user về customUserDetail
-                    CustomeUserDetails custome=(CustomeUserDetails) user;
-                    System.out.println("thông tin của User: "+ custome.getUser().getIdUser());
+                    try {
+                        UserDetails userDetails = customeUserDetailService.loadUserByUsername(username);
+                        CustomeUserDetails customUserDetail = (CustomeUserDetails) userDetails;
+                        UsernamePasswordAuthenticationToken authToken
+                                =new UsernamePasswordAuthenticationToken(customUserDetail,null,userDetails.getAuthorities());
+                        SecurityContextHolder.getContext().setAuthentication(authToken);
+                        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+                        UserDetails a = (UserDetails) authentication.getPrincipal();
+                        CustomeUserDetails b = (CustomeUserDetails) a;
+                        Authentication authenticationn= SecurityContextHolder.getContext().getAuthentication();
+                        UserDetails user=(UserDetails) authentication.getPrincipal();
+                        // ép user về customUserDetail
+                        CustomeUserDetails custome=(CustomeUserDetails) user;
+                        System.out.println("thông tin của User: "+ custome.getUser().getIdUser());
+                    } catch (UsernameNotFoundException e) {
+                        response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+                        response.setContentType("application/json");
+                        response.getWriter().write("{\"error\": \"User not found\"}");
+                        return;
+                    }
+
                 }
                 filterChain.doFilter(request, response);
             } catch (Exception e) {
